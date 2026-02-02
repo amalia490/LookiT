@@ -1,0 +1,110 @@
+﻿@model LookIT.Models.Comment
+
+<div class="container mt-5 mb-5 pb-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-8 col-lg-6">
+
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+
+                <div class="card-header bg-white border-0 pt-4 pb-0 text-center">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
+                         style="width: 64px; height: 64px; background-color: #FBF1F7;">
+                        <i class="bi bi-pencil-square fs-2" style="color: #B13079;"></i>
+                    </div>
+
+                    <h4 class="fw-bold mb-1">Editare comentariu</h4>
+
+                    <p class="text-muted small">
+                        <i class="bi bi-clock me-1"></i>
+                        Postat la: @Model.Date.ToString("d MMMM yyyy HH:mm")
+                    </p>
+                </div>
+
+                <div class="card-body p-4">
+
+                    <div class="alert alert-light border-0 d-flex align-items-center mb-4 rounded-3" style="background-color: #f8f9fa;">
+                        <i class="bi bi-info-circle-fill text-muted me-2 fs-5"></i>
+                        <span class="text-muted small">Modifici conținutul mesajului tău original.</span>
+                    </div>
+
+                    <form asp-action="Edit" asp-controller="Comments" asp-route-id="@Model.CommentId" method="post">
+                        <input type="hidden" name="Id" value="@Model.CommentId" />
+                        <input type="hidden" asp-for="PostId" />
+                        <input type="hidden" asp-for="Date" />
+
+                        <div class="mb-4">
+                            <label asp-for="Content" class="form-label small text-muted fw-bold ms-1">CONȚINUT NOU</label>
+
+                            <textarea asp-for="Content"
+                                      class="form-control custom-textarea-gray border-0 rounded-3 p-3"
+                                      placeholder="Scrie aici..."
+                                      style="height: 150px; resize: none; white-space: pre-line; box-shadow: none;"></textarea>
+
+                            <span asp-validation-for="Content" class="text-danger small mt-1 d-block ms-1"></span>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary rounded-pill py-2 fw-bold shadow-sm" type="submit">
+                                <i class="bi bi-check-lg me-1"></i> Salvează modificările
+                            </button>
+
+                            <a asp-controller="Posts" asp-action="Show" asp-route-id="@Model.PostId"
+                               class="btn btn-outline-secondary rounded-pill py-2 fw-bold border-0 custom-cancel-hover">
+                                Anulează
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+   
+   
+    .custom-textarea-gray {
+        background-color: #f0f2f5 !important; 
+        transition: background-color 0.2s ease;
+    }
+
+        .custom-textarea-gray:focus {
+            background-color: #e4e6eb !important; 
+            outline: none;
+        }
+
+
+    .btn-save-magenta {
+        background-color: #D14095; 
+        color: white;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+        .btn-save-magenta:hover {
+            background-color: #B13079; 
+            color: white;
+            transform: translateY(-1px);
+        }
+
+    
+    .custom-cancel-hover {
+        transition: all 0.3s ease;
+        color: #6c757d;
+        
+    }
+
+        .custom-cancel-hover:hover {
+            background-color: #FBF1F7; 
+            color: #B13079 !important; 
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+    .custom-input-bg::placeholder {
+        color: #6c757d;
+        opacity: 0.8;
+    }
+</style>

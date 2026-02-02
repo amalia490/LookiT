@@ -1,0 +1,161 @@
+﻿@model List<LookIT.Models.Post>
+
+@{
+    ViewData["Title"] = "Aprecieri";
+}
+
+<div class="container py-4">
+
+
+    <div class="mb-4">
+        <a href="javascript:history.back()" class="btn btn-sm btn-light rounded-pill px-3 fw-bold text-muted border-0 shadow-sm">
+            <i class="bi bi-arrow-left me-1"></i> Înapoi la profil
+        </a>
+    </div>
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-end align-items-md-center mb-5 pb-3 border-bottom gap-3">
+        
+        <div>
+            <h2 class="fw-bold mb-1">Postări apreciate</h2>
+            <p class="text-muted mb-0 small">Aici găsești tot conținutul care ți-a plăcut.</p>
+        </div>
+
+        <div>
+            <span class="badge bg-light text-dark border rounded-pill px-3 py-2 shadow-sm">
+                <i class="bi bi-heart-fill text-danger me-1"></i>
+                <span class="fw-bold">@Model.Count</span> aprecieri
+            </span>
+        </div>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="row g-1 mb-4">
+            @foreach (var post in Model)
+            {
+                <div class="col-4">
+                    <a asp-controller="Posts" asp-action="Show" asp-route-id="@post.PostId" class="text-decoration-none user-select-none">
+
+                        <div class="ratio ratio-1x1 border-0 rounded-0 overflow-hidden position-relative shadow-sm bg-light post-card-hover">
+
+                            <div class="position-absolute" style="top: 11px; left: 10px; z-index: 20;">
+                                @if (!string.IsNullOrEmpty(post.VideoUrl))
+                                {
+                                    <i class="bi bi-camera-reels-fill text-white fs-5 drop-shadow-icon"></i>
+                                }
+                                else if (!string.IsNullOrEmpty(post.ImageUrl))
+                                {
+                                    <i class="bi bi-image-fill text-white fs-5 drop-shadow-icon"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-file-text-fill text-white fs-5 drop-shadow-icon"></i>
+                                }
+                            </div>
+
+                            <div class="hover-overlay p-3">
+                                <div class="d-flex align-items-center justify-content-end w-100 text-truncate">
+                                    <span class="text-white me-3 fw-bold text-truncate text-shadow text-end" style="font-size: 1rem;">
+                                        @post.Author.FullName
+                                    </span>
+                                    <img src="@(!string.IsNullOrEmpty(post.Author.ProfilePictureUrl) ? post.Author.ProfilePictureUrl : "/images/default-profile.png")"
+                                         class="rounded-circle border border-1 border-white"
+                                         alt="User"
+                                         style="width: 30px; height: 30px; object-fit: cover; flex-shrink: 0;">
+                                </div>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(post.ImageUrl))
+                            {
+                                <img src="@post.ImageUrl" class="w-100 h-100" style="object-fit: cover;" alt="Post Image">
+                            }
+                            else if (!string.IsNullOrEmpty(post.VideoUrl))
+                            {
+                                <video class="w-100 h-100" style="object-fit: cover;" muted>
+                                    <source src="@post.VideoUrl" type="video/mp4">
+                                </video>
+                            }
+                            else
+                            {
+                                
+                                    var rawHtml = post.TextContent ?? "";
+                                    var plainText = System.Text.RegularExpressions.Regex.Replace(rawHtml, "<.*?>", " ").Trim();
+                                    var previewText = plainText.Length > 70 ? plainText.Substring(0, 70) + "..." : plainText;
+                                
+                                <div class="d-flex flex-column align-items-center justify-content-center h-100 p-3 text-center bg-white">
+                                    <i class="bi bi-quote fs-1 text-muted opacity-25 mb-1"></i>
+                                    <small class="fw-bold text-dark text-break fst-italic px-2" style="font-family: 'Georgia', serif; line-height: 1.3;">
+                                        @previewText
+                                    </small>
+                                </div>
+                            }
+
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5 mt-4 rounded-4 bg-light border border-dashed">
+            <div class="mb-4 d-inline-block position-relative">
+                <div class="bg-white rounded-circle shadow-sm d-flex align-items-center justify-content-center" 
+                     style="width: 100px; height: 100px; background-color: #FBF1F7;">
+                    <i class="bi bi-heart text-danger opacity-75" style="font-size: 3rem;"></i>
+                </div>
+            </div>
+            <h5 class="fw-bold text-dark">Nu ai aprecieri</h5>
+            <p class="text-muted small">Apasă pe inimioară la postările care îți plac.</p>
+            <a asp-controller="Posts" asp-action="Index" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">
+                Explorează Feed-ul
+            </a>
+        </div>
+    }
+</div>
+
+<style>
+    .hover-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-end;
+        background: rgba(0, 0, 0, 0.4);
+        opacity: 0;
+        transition: opacity 0.2s ease-in-out;
+        z-index: 10;
+        padding: 1rem;
+    }
+
+    .post-card-hover:hover .hover-overlay {
+        opacity: 1;
+        cursor: pointer;
+    }
+
+    .drop-shadow-icon {
+        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8));
+        color: #fff !important;
+    }
+
+    .text-shadow {
+        text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+    }
+
+    .font-georgia {
+        font-family: 'Georgia', serif;
+        line-height: 1.3;
+    }
+
+    .post-card-hover {
+        transform: translateZ(0);
+    }
+
+    .border-dashed {
+        border-style: dashed !important;
+        border-color: #dee2e6 !important;
+    }
+</style>

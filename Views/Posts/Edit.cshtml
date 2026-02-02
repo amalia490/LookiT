@@ -1,0 +1,329 @@
+﻿@model LookIT.Models.Post
+
+@{
+    ViewData["Title"] = "Editează Postarea";
+}
+@if (TempData["message"] != null)
+{
+    <div class="alert @TempData["messageType"] alert-dismissible fade show" role="alert">
+        @*  motivul respingerii venit din Controller *@
+        <strong>Atentie!</strong> @TempData["message"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+
+            @if (ViewBag.Message != null)
+            {
+                <div class="alert @ViewBag.Alert border-0 shadow-sm rounded-4 text-center mb-4 p-3">
+                    @ViewBag.Message
+                    <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+
+                <div class="card-header bg-white border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0">Editează Postarea</h5>
+                    <a asp-action="Show" asp-route-id="@Model.PostId" class="btn btn-sm btn-outline-secondary rounded-pill">
+                        <i class="bi bi-x-lg"></i> Anulează
+                    </a>
+                </div>
+
+                <div class="card-body p-4">
+
+                    <form method="post" asp-action="Edit" asp-route-id="@Model.PostId" asp-controller="Posts" enctype="multipart/form-data">
+                        <input type="hidden" asp-for="PostId" />
+
+                        <div asp-validation-summary="All" class="text-danger mb-3 small"></div>
+
+                        @* sectiunea de imagine*@
+                        <div class="mb-4">
+                            <label class="form-label small text-muted fw-bold ms-1">IMAGINE</label>
+
+                            <div class="position-relative mb-3">
+                                <input type="file" name="Image" id="imageInput" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer" accept="image/*" style="z-index: 10;" />
+                                <div class="bg-light border-0 rounded-3 p-3 text-center upload-box transition-hover d-flex align-items-center justify-content-center gap-2" style="cursor: pointer;">
+                                    <div class="bg-white shadow-sm rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                        <i class="bi bi-camera-fill text-success"></i>
+                                    </div>
+                                    <span class="small fw-bold text-muted">Schimbă / Adaugă Foto</span>
+                                </div>
+                                <small class="text-muted fst-italic ms-1" style="font-size: 0.7rem;">Formate: jpg, jpeg, png, gif.</small>
+                            </div>
+
+                            @*sectiunea pentru imaginea curenta (daca exista)*@
+                            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                            {
+                                <div id="currentImageWrapper">
+                                    <div class="position-relative text-center mb-3">
+                                        <div class="d-inline-block position-relative rounded-3 overflow-hidden border shadow-sm">
+                                            <img src="@Model.ImageUrl" alt="Current Image" class="img-fluid" style="max-height: 250px;" />
+
+                                            <div class="position-absolute bottom-0 start-0 w-100 bg-dark bg-opacity-50 p-1">
+                                                <span class="small fw-bold text-white">Imagine Curentă</span>
+                                            </div>
+
+                                            @*buton de stergere al imaginii curente*@
+                                            <button type="button" onclick="markImageForDeletion()"
+                                                    class="btn btn-sm btn-light rounded-circle shadow-sm position-absolute top-0 end-0 m-2"
+                                                    style="width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;"
+                                                    title="Șterge imaginea">
+                                                <i class="bi bi-x fs-5"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input class="form-check-input d-none" type="checkbox" name="DeleteImage" value="true" id="deleteImageCheck">
+                            }
+
+                            <div id="newImageContainer" class="d-none text-center position-relative mb-3">
+                                <div class="d-inline-block position-relative rounded-3 overflow-hidden border shadow-sm">
+                                    <img id="newImagePreview" src="#" class="img-fluid" style="max-height: 250px;" />
+
+                                    <button type="button" id="removeNewImage" class="btn btn-sm btn-light rounded-circle shadow-sm position-absolute top-0 end-0 m-2" style="width: 30px; height: 30px; padding: 0; z-index: 20;">
+                                        <i class="bi bi-x fs-5"></i>
+                                    </button>
+
+                                    <div class="position-absolute bottom-0 start-0 w-100 bg-success bg-opacity-75 p-1">
+                                        <span class="small fw-bold text-white">Imagine Nouă Selectată</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="mb-4">
+                            <label class="form-label small text-muted fw-bold ms-1">VIDEO</label>
+
+                            <div class="position-relative mb-3">
+                                <input type="file" name="Video" id="videoInput" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer" accept="video/*" style="z-index: 10;" />
+                                <div class="bg-light border-0 rounded-3 p-3 text-center upload-box transition-hover d-flex align-items-center justify-content-center gap-2" style="cursor: pointer;">
+                                    <div class="bg-white shadow-sm rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                        <i class="bi bi-camera-video-fill text-danger"></i>
+                                    </div>
+                                    <span class="small fw-bold text-muted">Schimbă / Adaugă Video</span>
+                                </div>
+                                <small class="text-muted fst-italic ms-1" style="font-size: 0.7rem;">Formate: MP4, WebM.</small>
+                            </div>
+
+
+                            @if (!string.IsNullOrEmpty(Model.VideoUrl))
+                            {
+                                <div id="currentVideoWrapper">
+                                    <div class="position-relative text-center mb-3">
+                                        <div class="d-inline-block position-relative rounded-3 overflow-hidden border shadow-sm w-100">
+                                            <video controls class="w-100" style="max-height: 250px; background-color: #000;">
+                                                <source src="@Model.VideoUrl" type="video/mp4">
+                                            </video>
+
+                                            <div class="p-1 bg-light border-top">
+                                                <span class="small fw-bold text-muted">Video Curent</span>
+                                            </div>
+
+                                            <button type="button" onclick="markVideoForDeletion()"
+                                                    class="btn btn-sm btn-light rounded-circle shadow-sm position-absolute top-0 end-0 m-2"
+                                                    style="width: 32px; height: 32px; padding: 0; z-index: 10; display: flex; align-items: center; justify-content: center;"
+                                                    title="Șterge videoclipul">
+                                                <i class="bi bi-x fs-5"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input class="form-check-input d-none" type="checkbox" name="DeleteVideo" value="true" id="deleteVideoCheck">
+                            }
+
+                            <div id="newVideoContainer" class="d-none text-center position-relative mb-3">
+                                <div class="d-inline-block position-relative rounded-3 overflow-hidden border shadow-sm w-100">
+                                    <video id="newVideoPreview" controls class="w-100" style="max-height: 250px; background-color: #000;">
+                                        Your browser does not support the video tag.
+                                    </video>
+
+                  
+                                    <button type="button" id="removeNewVideo" class="btn btn-sm btn-light rounded-circle shadow-sm position-absolute top-0 end-0 m-2" style="width: 30px; height: 30px; padding: 0; z-index: 20;">
+                                        <i class="bi bi-x fs-5"></i>
+                                    </button>
+
+                                    <div class="p-1 bg-success text-white border-top">
+                                        <span class="small fw-bold">Video Nou Selectat</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+           
+                        <div class="mb-5">
+                            <label asp-for="TextContent" class="form-label small text-muted fw-bold ms-1">CONȚINUT</label>
+                            <textarea asp-for="TextContent" class="form-control summernote bg-light border-0 rounded-3 p-3"></textarea>
+                            <span asp-validation-for="TextContent" class="text-danger small ms-1"></span>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary rounded-pill py-2 fw-bold shadow-sm">
+                                Salvează Modificările
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<style>
+    .cursor-pointer {
+        cursor: pointer;
+    }
+
+    .transition-hover {
+        transition: transform 0.2s, background-color 0.2s;
+    }
+
+        .transition-hover:hover {
+            transform: translateY(-2px);
+            background-color: #e9ecef !important;
+        }
+
+    .note-editor.note-frame {
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    .note-toolbar {
+        background: transparent !important;
+        border-bottom: 1px solid #dee2e6 !important;
+        padding: 5px 0 !important;
+    }
+
+    .note-statusbar {
+        display: none !important;
+    }
+
+    .note-editing-area, .note-editable {
+        background-color: #f8f9fa !important;
+    }
+</style>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+   
+
+        function markImageForDeletion() {
+
+            const wrapper = document.getElementById('currentImageWrapper');
+            if(wrapper) {
+                wrapper.classList.add('d-none');
+            }
+
+            const checkbox = document.getElementById('deleteImageCheck');
+            if(checkbox) {
+                checkbox.checked = true;
+            }
+        }
+
+        function markVideoForDeletion() {
+        
+            const wrapper = document.getElementById('currentVideoWrapper');
+            if(wrapper) {
+                wrapper.classList.add('d-none');
+            }
+
+          
+            const checkbox = document.getElementById('deleteVideoCheck');
+            if(checkbox) {
+                checkbox.checked = true;
+            }
+        }
+
+
+        const imageInput = document.getElementById('imageInput');
+        const newImgContainer = document.getElementById('newImageContainer');
+        const newImgPreview = document.getElementById('newImagePreview');
+        const removeNewImgBtn = document.getElementById('removeNewImage');
+        const currentImgWrapper = document.getElementById('currentImageWrapper');
+        const deleteImgCheck = document.getElementById('deleteImageCheck');
+
+        if (imageInput) {
+            
+            imageInput.addEventListener('change', function () {
+                const file = this.files[0];
+                if (file) {
+                    newImgPreview.src = URL.createObjectURL(file);
+                    newImgContainer.classList.remove('d-none');
+
+                    if(currentImgWrapper) currentImgWrapper.classList.add('d-none');
+              
+                    if(deleteImgCheck) deleteImgCheck.checked = false;
+                }
+            });
+
+            if (removeNewImgBtn) {
+                removeNewImgBtn.addEventListener('click', function () {
+                    imageInput.value = '';
+                    newImgPreview.src = '';
+                    newImgContainer.classList.add('d-none');
+
+                    if (currentImgWrapper) {
+                        currentImgWrapper.classList.remove('d-none');
+                    }
+
+                    if (deleteImgCheck) {
+                        deleteImgCheck.checked = false;
+                    }
+                });
+            }
+        }
+
+        const videoInput = document.getElementById('videoInput');
+        const newVidContainer = document.getElementById('newVideoContainer');
+        const newVidPreview = document.getElementById('newVideoPreview');
+        const removeNewVidBtn = document.getElementById('removeNewVideo');
+        const currentVidWrapper = document.getElementById('currentVideoWrapper');
+        const deleteVidCheck = document.getElementById('deleteVideoCheck');
+
+        if (videoInput) {
+            // cand selectam fisier
+            videoInput.addEventListener('change', function () {
+                const file = this.files[0];
+                if (file) {
+                    newVidPreview.src = URL.createObjectURL(file);
+                    newVidContainer.classList.remove('d-none');
+
+                    // ascundem video vechi
+                    if(currentVidWrapper) {
+                        currentVidWrapper.classList.add('d-none');
+                    }
+
+                    if(deleteVidCheck) {
+                        deleteVidCheck.checked = false;
+                    }
+                }
+            });
+
+            //cand apasam  x pe fisier nou
+            if (removeNewVidBtn) {
+                removeNewVidBtn.addEventListener('click', function () {
+                    videoInput.value = '';
+                    newVidPreview.src = '';
+                    newVidContainer.classList.add('d-none');
+
+
+                    if (currentVidWrapper) {
+                        currentVidWrapper.classList.remove('d-none');
+                    }
+                    if (deleteVidCheck) {
+                        deleteVidCheck.checked = false;
+                    }
+                });
+            }
+        }
+    </script>
+}

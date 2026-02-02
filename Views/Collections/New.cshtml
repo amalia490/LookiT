@@ -1,0 +1,92 @@
+﻿@model LookIT.Models.Collection
+
+@{
+    ViewData["Title"] = "Colecție nouă";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+
+                <div class="card-header bg-white border-0 pt-4 pb-0 text-center">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 64px; height: 64px; background-color: #FBF1F7;">
+                        <i class="bi bi-folder-plus fs-2" style="color: #B13079;"></i>
+                    </div>
+                    <h4 class="fw-bold mb-1">Creează o colecție</h4>
+                    <p class="text-muted small">Organizează-ți postările salvate într-un folder nou.</p>
+                </div>
+
+                <div class="card-body p-4">
+                    <form asp-action="New" asp-controller="Collections" method="post">
+
+                        @if (ViewBag.PostToSave != null)
+                        {
+                            <input type="hidden" name="PostToSave" value="@ViewBag.PostToSave" />
+                            <div class="alert alert-info border-0 rounded-3 shadow-sm mb-4">
+                                <i class="bi bi-info-circle-fill me-2"></i> Această colecție va include automat postarea curentă.
+                            </div>
+                        }
+
+                        <div class="mb-4">
+                            <label asp-for="Name" class="form-label small text-muted fw-bold ms-1">NUME COLECȚIE</label>
+
+                            <div class="input-group">
+                                <span class="input-group-text border-0 rounded-start-3 ps-3 custom-input-gray">
+                                    <i class="bi bi-tag"></i>
+                                </span>
+                                <input asp-for="Name" class="form-control custom-input-gray border-0 rounded-end-3 py-2" placeholder="ex: Idei Vacanță, Rețete..." autocomplete="off" />
+                            </div>
+
+                            <span asp-validation-for="Name" class="text-danger small mt-1 d-block ms-1"></span>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+
+                            <button type="submit" class="btn btn-primary rounded-pill py-2 fw-bold shadow-sm">
+                                <i class="bi bi-plus-lg me-1"></i> Creează colecția
+                            </button>
+
+                            <a href="javascript:history.back()" class="btn btn-outline-secondary rounded-pill py-2 fw-bold shadow-sm custom-cancel-hover">
+                                Anulează
+                            </a>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+            <div class="text-center mt-3">
+                <p class="text-muted small">
+                    <i class="bi bi-lock-fill me-1"></i> Colecțiile tale sunt private.
+                </p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<style>
+    .custom-cancel-hover {
+        transition: all 0.3s ease;
+        color: #6c757d;
+    }
+
+        .custom-cancel-hover:hover {
+          
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+    .custom-input-gray {
+        background-color: #f0f2f5 !important;
+        transition: background-color 0.2s ease;
+    }
+</style>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
